@@ -1,7 +1,7 @@
 // Configuration options wrapped in an IIFE
 const CONFIG = (() => {
   return {
-    excludedPaths: new Set(['/exclude-this-path', '/exclude/*/dynamic']),
+    excludedPaths: new Set(["/exclude-this-path", "/exclude/*/dynamic"]),
     redirectionStatusCode: 301,
   };
 })();
@@ -21,7 +21,7 @@ function log(level, message) {
  * @returns {string} The converted regular expression pattern
  */
 function convertWildcardsToRegExp(pattern) {
-  return pattern.replace(/\*/g, '[^/]*');
+  return pattern.replace(/\*/g, "[^/]*");
 }
 
 /**
@@ -34,7 +34,10 @@ function buildValidRegExp(pattern) {
     const convertedPattern = convertWildcardsToRegExp(pattern);
     return new RegExp(`^${convertedPattern}`);
   } catch (error) {
-    log('error', `Invalid excluded path regular expression (${pattern}): ${error.message}`);
+    log(
+      "error",
+      `Invalid excluded path regular expression (${pattern}): ${error.message}`,
+    );
     return null;
   }
 }
@@ -58,7 +61,8 @@ function shouldExcludePath(path) {
  */
 function getLowerCaseUrl(url) {
   const pathLowerCase = url.pathname.toLowerCase();
-  if (url.pathname === pathLowerCase || shouldExcludePath(url.pathname)) return null;
+  if (url.pathname === pathLowerCase || shouldExcludePath(url.pathname))
+    return null;
 
   const lowerCaseURL = new URL(url);
   lowerCaseURL.pathname = pathLowerCase;
@@ -75,7 +79,7 @@ async function handleRequest(request) {
     const { method, url: requestUrl } = request;
 
     // Only process GET and HEAD requests
-    if (method !== 'GET' && method !== 'HEAD') {
+    if (method !== "GET" && method !== "HEAD") {
       return fetch(request);
     }
 
@@ -88,12 +92,12 @@ async function handleRequest(request) {
 
     return fetch(request);
   } catch (error) {
-    log('error', `Error handling request: ${error.message}`);
-    return new Response('Internal Server Error', { status: 500 });
+    log("error", `Error handling request: ${error.message}`);
+    return new Response("Internal Server Error", { status: 500 });
   }
 }
 
 // Event listener for incoming requests
-addEventListener('fetch', (event) => {
+addEventListener("fetch", (event) => {
   event.respondWith(handleRequest(event.request));
 });
